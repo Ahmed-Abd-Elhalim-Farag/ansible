@@ -1,0 +1,22 @@
+---
+- name: Java playbook
+  hosts: all       # Inventory hosts group / server to act on
+  become: yes               # If to escalate privilege
+  become_method: sudo       # Set become method
+  remote_user: web        # Update username for remote server
+  vars:
+    download_url: https://download.oracle.com/otn/java/jdk/11.0.11+9/ab2da78f32ed489abb3ff52fd0a02b1c/jdk-11.0.11_linux-x64_bin.tar.gz?AuthParam=1620693248_0cf91c68416d9e58e4d96de6cec1be88
+    download_folder: /opt
+    java_name: "{{download_folder}}/jdk11.0.11"
+    java_archive: "{{download_folder}}/jdk-11.0.11_linux-x64_bin.tar.gz"
+
+  tasks:
+    - name: Unpack archive
+      command: "tar -zxf {{java_archive}} -C {{download_folder}} creates={{java_name}}"
+
+    - name: Fix ownershipyml
+      file: state=directory path={{java_name}} owner=root group=root recurse=yes
+
+    - name: Make Java available for system
+      command: 'alternatives --install "/usr/bin/java" "java" "{{java_name}}/bin/java" 2000'
+    - name : test
