@@ -14,3 +14,10 @@
         src: /home/acm/ansible/jdk-11.0.11_linux-x64_bin.tar.gz
         dest: /home/web/
         force: yes
+    - name : copy jre
+      copy:
+        src: /home/acm/ansible/jre-8u291-linux-x64.tar.gz
+        dest: /home/web/
+        force: yes
+    - name : setup jre
+      command : 'tar zxvf jre-8u291-linux-x64.tar.gz'

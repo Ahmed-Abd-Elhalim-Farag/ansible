@@ -8,7 +8,7 @@ Type=forking
 User=tomcat
 Group=tomcat
 
-Environment=JAVA_HOME={{ JAVA_HOME }}
+Environment=JAVA_HOME=/opt/jdk-11.0.11
 Environment='JAVA_OPTS=-Djava.awt.headless=true'
 
 Environment=CATALINA_HOME=/usr/share/tomcat

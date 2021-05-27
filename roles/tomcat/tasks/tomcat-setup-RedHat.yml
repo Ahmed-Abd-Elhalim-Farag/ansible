@@ -1,14 +1,3 @@
----
-- name: Unpack archive
-  command: "tar -zxf {{java_archive}} -C {{java_archive_location}} creates={{java_name}}"
-
-- name: Fix ownershipyml
-  file: state=directory path={{java_name}} owner=root group=root recurse=yes
-
-- name: Make Java available for system
-  command: 'alternatives --install "/usr/bin/java" "java" "{{java_name}}/bin/java" 2000'
-
-############################################################################################################################################
 - name: Add tomcat group
   group:
     name: tomcat
@@ -21,11 +10,31 @@
     createhome: no
     system: yes
 
-- name: Add web to tomcat group
-  user:
-    name: web
-    groups: tomcat,web
-    append: yes
+- name: Copy jdk remotly
+  ansible.builtin.copy:
+    src: /home/acm/ansible/jdk-11.0.11_linux-x64_bin.tar.gz
+    dest: /opt/
+    owner: tomcat
+    group: tomcat
+    mode: u=rwx,g=rwx
+    
+- name: Unpack archive
+  command: "tar -zxf /opt/jdk-11.0.11_linux-x64_bin.tar.gz -C /opt/ creates=/opt/jdk11.0.11"
+
+- name: Fix ownershipyml
+  file: state=directory path=/opt/jdk11.0.11 owner=root group=root recurse=yes
+
+#- name: Make Java available for system
+#  command: 'alternatives --install "/usr/bin/java" "java" "/opt/jdk11.0.11/bin/java" 2000'
+
+
+- name: Copy tomcat remotly
+  ansible.builtin.copy:
+    src: /home/acm/ansible/apache-tomcat-9.0.45.tar.gz
+    dest: /usr/share/
+    owner: tomcat
+    group: tomcat
+    mode: u=rwx,g=rwx
 
 - name: Create a tomcat directory
   file:
@@ -34,9 +43,20 @@
     owner: tomcat
     group: tomcat
 
+    
+#- name: Unpack archive
+ # command: "tar -zxf /usr/share/apache-tomcat-9.0.45.tar.gz -C /usr/share creates=/usr/share/tomcat"
+
+
+#- name: Download Tomcat
+ # get_url:
+  #  url: "{{ tomcat_archive_url }}"
+   # dest: "{{ tomcat_archive_dest }}"
+
+
 - name: Extract tomcat archive
   unarchive:
-    src: "{{ tomcat_archive_dest }}"
+    src: /usr/share/apache-tomcat-9.0.45.tar.gz
     dest: /usr/share/tomcat
     owner: tomcat
     group: tomcat
@@ -46,7 +66,7 @@
 
 - name: Copy tomcat service file
   template:
-    src: templates/tomcat.service.j2
+    src: /home/acm/ansible/tomcat-ansible/roles/tomcat/templates/tomcat.service
     dest: /etc/systemd/system/tomcat.service
   when: ansible_service_mgr == "systemd"
 
@@ -72,6 +92,7 @@
     state: enabled
     immediate: yes
   when: ansible_service_mgr == "systemd"
+
 - name: change port to 9090
   ansible.builtin.replace:
     path: /usr/share/tomcat/conf/server.xml
@@ -93,6 +114,12 @@
     - /usr/share/tomcat/webapps/host-manager/META-INF/context.xml
     - /usr/share/tomcat/webapps/manager/META-INF/context.xml
   notify: restart tomcat
+- name: Add web to tomcat group
+  user:
+    name: web
+    groups: tomcat,web
+    append: yes
+
 - name : copy war file to deploy
   copy:
     src: /var/lib/jenkins/workspace/final/target/spring-petclinic-2.4.5.war
