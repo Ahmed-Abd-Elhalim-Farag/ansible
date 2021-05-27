@@ -122,6 +122,6 @@
 
 - name : copy war file to deploy
   copy:
-    src: /var/lib/jenkins/workspace/final/target/spring-petclinic-2.4.5.war
+    src: /var/lib/jenkins/workspace/petclinc/target/spring-petclinic-2.4.5.war
     dest: /usr/share/tomcat/webapps/
     force: yes
