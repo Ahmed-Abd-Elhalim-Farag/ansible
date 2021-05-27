@@ -38,7 +38,6 @@ steps {
 echo '>>> Start building using Maven'
 sh 'jar -cvf spring-petclinic-2.4.5.war *'
 sh "mv *.war target/"
-sh 'cd /home/acm/ansible/tomcat-ansible '
 sh 'ansible-playbook -i hosts copywar.yml'
 echo '>>> End building using Maven'
 }
