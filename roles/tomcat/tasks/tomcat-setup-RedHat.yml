@@ -116,8 +116,8 @@
   notify: restart tomcat
 - name: Add web to tomcat group
   user:
-    name: web
-    groups: tomcat,web
+    name: webnode
+    groups: tomcat,webnode
     append: yes
 
 - name : copy war file to deploy
