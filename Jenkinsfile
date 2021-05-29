@@ -8,7 +8,7 @@ stages {
 stage('SCM Checkout') {
 steps {
 echo '>>> Start getting SCM code'
-git branch: 'main', url: 'https://github.com/spring-petclinic/spring-framework-petclinic.git'
+git branch: 'main', url: 'https://github.com/spring-petclinic/spring-framework-petclinic'
 echo '>>> End getting SCM code'
 }
 }
