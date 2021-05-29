@@ -1,12 +1,17 @@
 ---
 - name: Tomcat deployment playbook
-  hosts: all       # Inventory hosts group / server to act on
-# become: yes               # If to escalate privilege
+  hosts: webnodes      # Inventory hosts group / server to act on
+  become: yes               # If to escalate privilege
   become_method: sudo       # Set become method
-  remote_user: webnode       # Update username for remote server
+  remote_user: webnode      # Update username for remote server
   tasks:
+    - name: Add web to tomcat group
+      user:
+        name: webnode
+        groups: tomcat,webnode
+        append: yes
     - name : copy war file to deploy
       copy:
-        src: /var/lib/jenkins/workspace/petclinc/target/spring-petclinic-2.4.5.war
+        src: /home/acm/ansible/tomcat-ansible/petclinic.war
         dest: /usr/share/tomcat/webapps/
         force: yes
