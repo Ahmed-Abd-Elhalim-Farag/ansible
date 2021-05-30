@@ -3,6 +3,14 @@ pipeline {
     agent any
     
     stages {
+        stages {
+stage('SCM Checkout') {
+steps {
+echo '>>> Start getting SCM code'
+git branch: 'main', url: 'https://github.com/Ahmed-Abd-Elhalim-Farag/spring-petclinic/'
+echo '>>> End getting SCM code'
+}
+}
         
         stage('Build') {
             steps {
